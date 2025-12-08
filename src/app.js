@@ -7,7 +7,7 @@ function renderAppLayout() {
   const appContainer = document.getElementById('app');
   appContainer.innerHTML = `
     <header class="mb-6 text-center">
-      <h1 class="text-3xl font-bold text-gray-800">💬 我们的聊天室</h1>
+      <h1 class="text-3xl font-bold text-gray-800">💬 Our Chat Room</h1>
       <p class="text-gray-600">一个简单的实时群聊应用</p>
     </header>
 
