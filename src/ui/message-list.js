@@ -1,44 +1,69 @@
-import chatService from '../services/chat.js';
+import authService from '../services/auth.js';
 
-// 渲染单条消息
-function renderMessage(msg) {
-  const isCurrentUser = (msg.username === chatService.getUser());
-  const time = new Date(msg.created_at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-
-  return `
-    <div class="fade-in mb-3 ${isCurrentUser ? 'text-right' : ''}">
-      <div class="inline-block max-w-xs md:max-w-md lg:max-w-lg text-left">
-        <div class="text-sm text-gray-500 mb-1">
-          ${isCurrentUser ? '你' : msg.username} • ${time}
-        </div>
-        <div class="p-3 rounded-2xl ${isCurrentUser ? 'bg-primary text-white rounded-br-none' : 'bg-gray-100 text-gray-800 rounded-bl-none'}">
-          ${escapeHtml(msg.message).replace(/\n/g, '<br>')}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// 简单的HTML转义，防止XSS
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-// 渲染整个消息列表
 export function renderMessageList(messages = []) {
   const container = document.getElementById('message-list');
   if (!container) return;
 
-  // 如果是首次渲染或加载历史，替换全部内容
-  if (messages.length > 1 || container.children.length === 0) {
-    container.innerHTML = messages.map(renderMessage).join('');
-  } else {
-    // 否则只追加最新的一条消息
-    container.innerHTML += renderMessage(messages[0]);
+  // 清空加载状态
+  if (container.innerHTML.includes('加载消息中')) {
+    container.innerHTML = '';
   }
 
-  // 滚动到底部
-  container.scrollTop = container.scrollHeight;
+  const currentUserId = authService.getUser()?.id;
+  
+  messages.forEach(msg => {
+    const isCurrentUser = (msg.user_id === currentUserId);
+    const time = formatTime(msg.created_at);
+    
+    const messageEl = document.createElement('div');
+    messageEl.className = `message-enter ${isCurrentUser ? 'text-right' : ''}`;
+    
+    messageEl.innerHTML = `
+      <div class="inline-block max-w-[85%] text-left">
+        ${!isCurrentUser ? `<div class="text-xs text-gray-600 mb-1 px-2">${msg.username}</div>` : ''}
+        <div class="px-4 py-3 rounded-2xl ${isCurrentUser ? 
+          'bg-black text-white rounded-br-none' : 
+          'bg-gray-100 text-gray-800 rounded-bl-none'}">
+          ${escapeHtml(msg.message)}
+        </div>
+        <div class="text-xs text-gray-400 mt-1 px-2">${time}</div>
+      </div>
+    `;
+    
+    // 如果已有相同ID的消息，不重复添加
+    if (!container.querySelector(`[data-msg-id="${msg.id}"]`)) {
+      messageEl.setAttribute('data-msg-id', msg.id);
+      container.appendChild(messageEl);
+    }
+  });
+
+  // 平滑滚动到底部
+  setTimeout(() => {
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: 'smooth'
+    });
+  }, 50);
+}
+
+function formatTime(isoString) {
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return '刚刚';
+  if (diffMins < 60) return `${diffMins}分钟前`;
+  
+  return date.toLocaleTimeString('zh-CN', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: false 
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML.replace(/\n/g, '<br>');
 }

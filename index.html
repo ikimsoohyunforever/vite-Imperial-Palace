@@ -1,49 +1,108 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宫 Imperial Palace</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- TailwindCSS CDN (无需安装) -->
+    <meta charset="UTF-8"> <!-- 这行必须放在最前面！ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>简聊</title>
+    
+    <!-- 使用CDN确保Tailwind工作 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // 简单自定义一些Tailwind样式
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary': '#3b82f6',
-                        'secondary': '#10b981',
-                    }
-                }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { black: '#1a1a1a' },
+            borderRadius: {
+              'xl': '1rem',
+              '2xl': '1.5rem',
             }
+          }
         }
+      }
     </script>
+    
+    <!-- 引入图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 确保字体正确 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <style>
-        /* 自定义滚动条和动画 */
-        .message-list {
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 #f1f5f9;
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+      /* 基础样式确保显示 */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { 
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: #f9fafb;
+        color: #1f2937;
+        min-height: 100vh;
+      }
+      #app { min-height: 100vh; }
+      
+      /* 自定义滚动条 */
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+      
+      /* 消息动画 */
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .message-enter { animation: fadeInUp 0.3s ease-out; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div id="app" class="container mx-auto p-4 max-w-4xl">
-        <!-- 应用主容器，由JavaScript动态填充 -->
+<body>
+    <div id="app">
+        <!-- 加载状态显示 -->
+        <div class="min-h-screen flex items-center justify-center p-6">
+            <div class="text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-black mb-4"></div>
+                <h2 class="text-lg font-medium text-gray-900">加载简聊应用中...</h2>
+                <p class="text-gray-500 mt-2">如果长时间停留在此，请检查控制台错误</p>
+            </div>
+        </div>
     </div>
-    <script type="module" src="/src/main.js"></script>
+    
+    <script type="module">
+        // 添加错误捕获和调试
+        console.log('=== 应用开始加载 ===');
+        
+        try {
+            // 动态导入app.js
+            const module = await import('./src/main.js');
+            console.log('=== main.js 加载成功 ===');
+            
+            // 等待DOM加载
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    console.log('=== DOM加载完成，启动应用 ===');
+                });
+            } else {
+                console.log('=== DOM已就绪，立即启动 ===');
+            }
+        } catch (error) {
+            console.error('=== 加载失败 ===', error);
+            
+            // 显示错误界面
+            document.getElementById('app').innerHTML = `
+                <div class="min-h-screen flex items-center justify-center p-6">
+                    <div class="bg-white rounded-2xl p-8 max-w-md w-full text-center">
+                        <div class="text-red-500 text-4xl mb-4">⚠️</div>
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">加载出错</h1>
+                        <p class="text-gray-600 mb-6">${error.message}</p>
+                        <div class="bg-gray-50 p-4 rounded-lg text-left mb-6">
+                            <code class="text-sm text-gray-800">${error.stack}</code>
+                        </div>
+                        <button onclick="location.reload()" 
+                            class="bg-black text-white px-6 py-3 rounded-lg font-medium w-full">
+                            重新加载
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
 </body>
-
 </html>
-
-
-
-
