@@ -17,8 +17,8 @@ export function renderChatUI() {
               <span class="text-white text-sm">💬</span>
             </div>
             <div>
-              <h1 class="font-medium text-gray-900">简聊</h1>
-              <p class="text-xs text-gray-500">${username}</p>
+              <h1 class="font-medium text-gray-900">ฮ่องเต้และขันที</h1>
+              <p class="text-xs text-gray-500">👑${username}   Lv.1  💰10Bhat</p>
             </div>
           </div>
           <div class="flex items-center space-x-2">
