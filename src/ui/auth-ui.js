@@ -11,8 +11,8 @@ export function renderAuthUI(onLoginSuccess) {
           <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-black text-white text-2xl mb-4">
             💬
           </div>
-          <h1 class="text-3xl font-light text-gray-900">简聊</h1>
-          <p class="text-gray-500 mt-2">轻量级私密聊天室</p>
+          <h1 class="text-3xl font-light text-gray-900">Emperor and eunuch</h1>
+          <p class="text-gray-500 mt-2">ฮ่องเต้และขันที</p>
         </div>
 
         <!-- 表单容器 -->
