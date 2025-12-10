@@ -22,6 +22,15 @@ export function renderChatUI() {
             </div>
           </div>
           <div class="flex items-center space-x-2">
+          <!-- +++ 新增游戏按钮 +++ -->
+          <a href="/mini-game/index.html" 
+             target="_blank"
+             title="打开游戏"
+             class="text-gray-600 hover:text-purple-600 p-2 transition-colors">
+            <i class="fas fa-gamepad text-lg"></i>
+          </a>
+          <!-- +++ 新增结束 +++ -->
+
             <button id="logout-btn" class="text-gray-600 hover:text-gray-900 p-2">
               <i class="fas fa-sign-out-alt"></i>
             </button>
